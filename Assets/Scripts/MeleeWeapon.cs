@@ -71,6 +71,14 @@ public class MeleeWeapon : MonoBehaviour
             return;
         }
 
+        Parry parry = other.GetComponentInParent<Parry>();
+        if (parry != null && parry.IsParrying)
+        {
+            parry.OnSuccessfulParry();
+            alreadyHit.Add(target);
+            return;
+        }
+
         alreadyHit.Add(target);
         target.TakeDamage(damage);
     }
