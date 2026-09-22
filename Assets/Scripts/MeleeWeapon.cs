@@ -17,7 +17,7 @@ public class MeleeWeapon : MonoBehaviour
 
     private void Awake()
     {
-        animator = GetComponent<Animator>();
+        animator = GetComponentInChildren<Animator>();
         hitbox = GetComponentInChildren<Collider>();
         hitbox.enabled = false;
     }
