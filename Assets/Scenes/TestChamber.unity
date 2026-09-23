@@ -1565,6 +1565,28 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.19052362, y: 0.9558718, z: 0.08938074}
   m_Center: {x: 0.006141424, y: 0.26184666, z: 0.0012662411}
+--- !u!95 &1687891576
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1687891568}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: b91937c4c15b2d9438acf8e2615aa4e0, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1797938216
 GameObject:
   m_ObjectHideFlags: 0
@@ -1917,7 +1939,7 @@ PrefabInstance:
     - target: {fileID: 4237850763604310994, guid: 59142cea127db704fb3f0449d3793357, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 31f801ead395ca5488c7aad4525300a0, type: 2}
+      objectReference: {fileID: 9100000, guid: b91937c4c15b2d9438acf8e2615aa4e0, type: 2}
     - target: {fileID: 4679887183209394807, guid: 59142cea127db704fb3f0449d3793357, type: 3}
       propertyPath: m_Name
       value: Enemy
@@ -2032,6 +2054,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1887270430338232924, guid: 59142cea127db704fb3f0449d3793357, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1687891573}
+    - targetCorrespondingSourceObject: {fileID: 1887270430338232924, guid: 59142cea127db704fb3f0449d3793357, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1687891576}
   m_SourcePrefab: {fileID: 100100000, guid: 59142cea127db704fb3f0449d3793357, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
