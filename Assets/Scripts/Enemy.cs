@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -17,15 +18,31 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float attackCooldown = 1.5f;
     [SerializeField] private float turnSpeed = 360f;
 
+    [Header("Индикатор парирования")]
+    [Tooltip("Объект со спрайтом-индикатором парирования над врагом")]
+    [SerializeField] private GameObject parryIndicator;
+
+    [Tooltip("Задержка перед появлением индикатора от начала замаха (сек)")]
+    [SerializeField] private float indicatorDelay = 0.12f;
+
+    [Tooltip("Время отображения индикатора (активное окно парирования, сек)")]
+    [SerializeField] private float indicatorDuration = 0.2f;
+
     private NavMeshAgent agent;
     private Health health;
     private State state = State.Chase;
     private float nextAttackTime;
+    private Coroutine indicatorCoroutine;
 
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
         health = GetComponent<Health>();
+
+        if (parryIndicator != null)
+        {
+            parryIndicator.SetActive(false);
+        }
     }
 
     private void OnEnable()
@@ -36,19 +53,29 @@ public class Enemy : MonoBehaviour
     private void OnDisable()
     {
         health.onDied.RemoveListener(Die);
+        StopIndicator();
     }
 
     private void Start()
     {
-        if (target != null) { return; }
+        if (target != null)
+        {
+            return;
+        }
 
         GameObject player = GameObject.FindWithTag("Player");
-        if (player != null) { target = player.transform; }
+        if (player != null)
+        {
+            target = player.transform;
+        }
     }
 
     private void Update()
     {
-        if (state == State.Dead || target == null) { return; }
+        if (state == State.Dead || target == null)
+        {
+            return;
+        }
 
         switch (state)
         {
@@ -93,12 +120,53 @@ public class Enemy : MonoBehaviour
             agent.updateRotation = false;
             state = State.Attack;
             weapon.Swing();
+
+            StartIndicator();
+        }
+    }
+
+    private void StartIndicator()
+    {
+        StopIndicator();
+        if (parryIndicator != null)
+        {
+            indicatorCoroutine = StartCoroutine(ParryIndicatorRoutine());
+        }
+    }
+
+    private void StopIndicator()
+    {
+        if (indicatorCoroutine != null)
+        {
+            StopCoroutine(indicatorCoroutine);
+            indicatorCoroutine = null;
+        }
+
+        if (parryIndicator != null)
+        {
+            parryIndicator.SetActive(false);
+        }
+    }
+
+    private IEnumerator ParryIndicatorRoutine()
+    {
+        yield return new WaitForSeconds(indicatorDelay);
+
+        if (state == State.Attack && parryIndicator != null)
+        {
+            parryIndicator.SetActive(true);
+            yield return new WaitForSeconds(indicatorDuration);
+            if (parryIndicator != null)
+            {
+                parryIndicator.SetActive(false);
+            }
         }
     }
 
     private void Die()
     {
         state = State.Dead;
+        StopIndicator();
         agent.enabled = false;
         weapon.gameObject.SetActive(false);
         Destroy(gameObject, 2f);
