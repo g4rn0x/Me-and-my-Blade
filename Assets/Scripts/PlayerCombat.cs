@@ -5,13 +5,27 @@ using UnityEngine.InputSystem;
 public class PlayerCombat : MonoBehaviour
 {
     [SerializeField] private InputAction attackAction;
-    [SerializeField] private MeleeWeapon weapon;
+    [SerializeField] private GameObject weapon;
 
     private Health health;
+    private MeleeWeapon currentWeapon;
+
+    public MeleeWeapon CurrentWeapon
+    {
+        get
+        {
+            if (currentWeapon == null)
+            {
+                RefreshWeapon();
+            }
+            return currentWeapon;
+        }
+    }
 
     private void Awake()
     {
         health = GetComponent<Health>();
+        RefreshWeapon();
     }
 
     private void OnEnable()
@@ -28,15 +42,27 @@ public class PlayerCombat : MonoBehaviour
 
     private void Update()
     {
-        if (attackAction.WasPressedThisFrame())
+        if (attackAction.WasPressedThisFrame() && CurrentWeapon != null)
         {
-            weapon.Swing();
+            CurrentWeapon.Swing();
         }
+    }
+
+    public void SetWeapon(GameObject newWeapon)
+    {
+        weapon = newWeapon;
+        RefreshWeapon();
+    }
+
+    private void RefreshWeapon()
+    {
+        currentWeapon = weapon != null
+            ? weapon.GetComponentInChildren<MeleeWeapon>()
+            : GetComponentInChildren<MeleeWeapon>();
     }
 
     private void OnDied()
     {
-        Debug.Log("Игрок погиб");
         GetComponent<FirstPersonPlayerController>().enabled = false;
         enabled = false;
     }

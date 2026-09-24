@@ -2,35 +2,22 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-/// <summary>
-/// Универсальный компонент парирования.
-/// Может использоваться как игроком (через ввод), так и элитными врагами (через ИИ).
-/// </summary>
 public class Parry : MonoBehaviour
 {
-    [Header("Input (опционально, для игрока)")]
+    [Header("Input")]
     [SerializeField] private InputAction parryAction;
 
-    [Header("Настройки окна парирования")]
-    [Tooltip("Длительность активного окна парирования в секундах")]
-    [SerializeField] private float parryWindow = 0.25f;
-
-    [Tooltip("Перезарядка парирования в секундах")]
-    [SerializeField] private float parryCooldown = 0.5f;
-
-    [Tooltip("Сектор обзора перед собой, в котором работает парирование (в градусах)")]
+    [Header("Settings")]
+    [SerializeField] private float parryWindow = 0.2f;
+    [SerializeField] private float parryCooldown = 0.4f;
     [SerializeField] private float maxParryAngle = 140f;
 
-    [Header("Анимация")]
+    [Header("Animation")]
     [SerializeField] private Animator weaponAnimator;
 
     private static readonly int ParryTrigger = Animator.StringToHash("Parry");
 
     public bool IsParrying { get; private set; }
-
-    /// <summary>
-    /// Событие успешного парирования (для эффектов, звуков, хит-стопа).
-    /// </summary>
     public event Action OnParrySuccessful;
 
     private float windowEndTime;
@@ -63,23 +50,17 @@ public class Parry : MonoBehaviour
 
     private void Update()
     {
-        // Чтение ввода, если экшен назначен и включен (для игрока)
         if (parryAction != null && parryAction.enabled && parryAction.WasPressedThisFrame())
         {
             TryParry();
         }
 
-        // Автоматическое закрытие окна парирования по истечении времени
         if (IsParrying && Time.time >= windowEndTime)
         {
             IsParrying = false;
         }
     }
 
-    /// <summary>
-    /// Попытка активировать парирование.
-    /// Может вызываться как из Update игрока, так и напрямую ИИ элитного врага.
-    /// </summary>
     public bool TryParry()
     {
         if (Time.time < cooldownEndTime)
@@ -91,6 +72,11 @@ public class Parry : MonoBehaviour
         windowEndTime = Time.time + parryWindow;
         IsParrying = true;
 
+        if (weaponAnimator == null)
+        {
+            weaponAnimator = GetComponentInChildren<Animator>();
+        }
+
         if (weaponAnimator != null)
         {
             weaponAnimator.SetTrigger(ParryTrigger);
@@ -99,9 +85,6 @@ public class Parry : MonoBehaviour
         return true;
     }
 
-    /// <summary>
-    /// Проверяет, находится ли источник атаки в секторе обзора парирующего (защита от ударов в спину).
-    /// </summary>
     public bool CanParryFacing(Vector3 attackerPosition)
     {
         Vector3 toAttacker = attackerPosition - transform.position;
@@ -119,9 +102,6 @@ public class Parry : MonoBehaviour
         return angle <= maxParryAngle * 0.5f;
     }
 
-    /// <summary>
-    /// Вызывается оружием при успешном парировании удара.
-    /// </summary>
     public void OnSuccessfulParry()
     {
         IsParrying = false;
