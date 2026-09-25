@@ -12,6 +12,10 @@ public class PlayerCombat : MonoBehaviour
     private void Awake()
     {
         health = GetComponent<Health>();
+        if (weapon == null)
+        {
+            weapon = GetComponentInChildren<MeleeWeapon>();
+        }
     }
 
     private void OnEnable()

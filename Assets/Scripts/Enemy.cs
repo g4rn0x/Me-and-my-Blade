@@ -39,6 +39,11 @@ public class Enemy : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         health = GetComponent<Health>();
 
+        if (weapon == null)
+        {
+            weapon = GetComponentInChildren<MeleeWeapon>();
+        }
+
         if (parryIndicator != null)
         {
             parryIndicator.SetActive(false);

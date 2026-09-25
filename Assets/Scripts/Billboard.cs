@@ -6,11 +6,22 @@ public class Billboard : MonoBehaviour
 
     private void Start()
     {
-        cam = Camera.main.transform;
+        if (Camera.main != null)
+        {
+            cam = Camera.main.transform;
+        }
     }
 
     private void LateUpdate()
     {
-        transform.forward = cam.forward;
+        if (cam == null && Camera.main != null)
+        {
+            cam = Camera.main.transform;
+        }
+
+        if (cam != null)
+        {
+            transform.rotation = cam.rotation;
+        }
     }
 }
