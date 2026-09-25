@@ -9,40 +9,50 @@ public class Enemy : MonoBehaviour
     private enum State { Chase, Attack, Dead }
 
     [Header("References")]
-    [SerializeField] private MeleeWeapon weapon;
+    [SerializeField] private GameObject weapon;
     [SerializeField] private Transform target;
 
-    [Header("Attack")]
-    [SerializeField] private float attackRange = 2f;
-    [SerializeField] private float attackAngle = 30f;
+    [Header("Attack Settings")]
+    [SerializeField] private float attackRange = 2.2f;
+    [SerializeField] private float attackAngle = 35f;
     [SerializeField] private float attackCooldown = 1.5f;
     [SerializeField] private float turnSpeed = 360f;
+    [SerializeField] private float lungeSpeed = 1.5f;
 
-    [Header("Индикатор парирования")]
-    [Tooltip("Объект со спрайтом-индикатором парирования над врагом")]
+    [Header("Parry Indicator")]
     [SerializeField] private GameObject parryIndicator;
-
-    [Tooltip("Задержка перед появлением индикатора от начала замаха (сек)")]
-    [SerializeField] private float indicatorDelay = 0.12f;
-
-    [Tooltip("Время отображения индикатора (активное окно парирования, сек)")]
-    [SerializeField] private float indicatorDuration = 0.2f;
+    [SerializeField] private float indicatorDelay = 0.18f;
+    [SerializeField] private float indicatorDuration = 0.20f;
 
     private NavMeshAgent agent;
     private Health health;
+    private MeleeWeapon currentWeapon;
     private State state = State.Chase;
     private float nextAttackTime;
     private Coroutine indicatorCoroutine;
+
+    public MeleeWeapon CurrentWeapon
+    {
+        get
+        {
+            if (currentWeapon == null && weapon != null)
+            {
+                currentWeapon = weapon.GetComponentInChildren<MeleeWeapon>();
+            }
+            if (currentWeapon == null)
+            {
+                currentWeapon = GetComponentInChildren<MeleeWeapon>();
+            }
+            return currentWeapon;
+        }
+    }
 
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
         health = GetComponent<Health>();
 
-        if (weapon == null)
-        {
-            weapon = GetComponentInChildren<MeleeWeapon>();
-        }
+        RefreshWeapon();
 
         if (parryIndicator != null)
         {
@@ -88,7 +98,16 @@ public class Enemy : MonoBehaviour
                 UpdateChase();
                 break;
             case State.Attack:
-                if (!weapon.IsSwinging)
+                if (CurrentWeapon != null && CurrentWeapon.IsSwinging)
+                {
+                    Vector3 toTarget = target.position - transform.position;
+                    toTarget.y = 0f;
+                    if (toTarget.sqrMagnitude > 1.8f * 1.8f)
+                    {
+                        agent.Move(transform.forward * (lungeSpeed * Time.deltaTime));
+                    }
+                }
+                else
                 {
                     nextAttackTime = Time.time + attackCooldown;
                     agent.updateRotation = true;
@@ -110,6 +129,7 @@ public class Enemy : MonoBehaviour
         }
 
         agent.isStopped = true;
+        agent.velocity = Vector3.zero;
 
         Vector3 toTarget = target.position - transform.position;
         toTarget.y = 0f;
@@ -124,10 +144,27 @@ public class Enemy : MonoBehaviour
         {
             agent.updateRotation = false;
             state = State.Attack;
-            weapon.Swing();
+
+            if (CurrentWeapon != null)
+            {
+                CurrentWeapon.Swing();
+            }
 
             StartIndicator();
         }
+    }
+
+    public void SetWeapon(GameObject newWeapon)
+    {
+        weapon = newWeapon;
+        RefreshWeapon();
+    }
+
+    private void RefreshWeapon()
+    {
+        currentWeapon = weapon != null
+            ? weapon.GetComponentInChildren<MeleeWeapon>()
+            : GetComponentInChildren<MeleeWeapon>();
     }
 
     private void StartIndicator()
@@ -173,7 +210,10 @@ public class Enemy : MonoBehaviour
         state = State.Dead;
         StopIndicator();
         agent.enabled = false;
-        weapon.gameObject.SetActive(false);
+        if (weapon != null)
+        {
+            weapon.SetActive(false);
+        }
         Destroy(gameObject, 2f);
     }
 }
