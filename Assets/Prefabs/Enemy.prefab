@@ -512,7 +512,7 @@ MonoBehaviour:
   target: {fileID: 0}
   attackRange: 2
   attackAngle: 30
-  attackCooldown: 1.5
+  attackCooldown: 1
   turnSpeed: 360
   parryIndicator: {fileID: 5361126362122929977}
   indicatorDelay: 0.12

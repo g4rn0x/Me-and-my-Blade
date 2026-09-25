@@ -9,7 +9,7 @@ public class Parry : MonoBehaviour
 
     [Header("Settings")]
     [SerializeField] private float parryWindow = 0.2f;
-    [SerializeField] private float parryCooldown = 0.4f;
+    [SerializeField] private float parryCooldown = 0.2f;
     [SerializeField] private float maxParryAngle = 140f;
 
     [Header("Animation")]
@@ -105,6 +105,7 @@ public class Parry : MonoBehaviour
     public void OnSuccessfulParry()
     {
         IsParrying = false;
+        cooldownEndTime = 0f;
         OnParrySuccessful?.Invoke();
     }
 }

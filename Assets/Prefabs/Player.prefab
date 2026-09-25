@@ -697,7 +697,7 @@ MonoBehaviour:
     m_Flags: 0
     m_Priority: 0
   parryWindow: 0.3
-  parryCooldown: 1
+  parryCooldown: 0.2
   maxParryAngle: 140
   weaponAnimator: {fileID: 7171536953559980285}
 --- !u!1 &4313070720383842639

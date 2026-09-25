@@ -15,7 +15,7 @@ public class Enemy : MonoBehaviour
     [Header("Attack Settings")]
     [SerializeField] private float attackRange = 2.2f;
     [SerializeField] private float attackAngle = 35f;
-    [SerializeField] private float attackCooldown = 1.5f;
+    [SerializeField] private float attackCooldown = 1.0f;
     [SerializeField] private float turnSpeed = 360f;
     [SerializeField] private float lungeSpeed = 1.5f;
 
